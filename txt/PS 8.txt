@@ -1,0 +1,222 @@
+﻿Make a folder and make two files : index.html and server.js
+Commands : 
+* cd 
+* npm init -y
+* npm install express
+* node server.js
+* Server running at http://localhost:3000
+
+
+index.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Feedback Form - Purva</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #fbc2eb, #a6c1ee);
+      color: #333;
+      padding: 20px;
+    }
+    form {
+      background: white;
+      border-radius: 15px;
+      padding: 20px;
+      width: 350px;
+      margin: auto;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      background-color: #6a5acd;
+      border: none;
+      color: white;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+  <h2 align="center">🌸 Feedback Form - Purva 🌸</h2>
+
+
+  <form id="feedbackForm" action="http://localhost:3000/submit" method="POST" onsubmit="return validateForm()">
+    <label>Name:</label>
+    <input type="text" id="name" name="name" required><br>
+
+
+    <label>Email:</label>
+    <input type="email" id="email" name="email" required><br>
+
+
+    <label>Rating (1–5):</label>
+    <input type="number" id="rating" name="rating" min="1" max="5" required><br>
+
+
+    <label>Feedback Message:</label>
+    <textarea id="feedback" name="feedback" rows="4" minlength="10" required></textarea><br>
+
+
+    <button type="submit" id="submitBtn">Submit</button>
+  </form>
+
+
+  <script>
+    // Disable submit if fields are invalid
+    const form = document.getElementById("feedbackForm");
+    const submitBtn = document.getElementById("submitBtn");
+
+
+    form.addEventListener("input", () => {
+      submitBtn.disabled = !form.checkValidity();
+    });
+
+
+    // Frontend validation
+    function validateForm() {
+      const name = document.getElementById("name").value.trim();
+      const rating = parseInt(document.getElementById("rating").value);
+      const feedback = document.getElementById("feedback").value.trim();
+
+
+      // Prevent script tags
+      if (/<script>/i.test(name) || /<script>/i.test(feedback)) {
+        alert("❌ Script tags are not allowed!");
+        return false;
+      }
+
+
+      // Name validation (letters only)
+      if (!/^[A-Za-z\s]+$/.test(name)) {
+        alert("❌ Name must contain only letters!");
+        return false;
+      }
+
+
+      // Rating validation
+      if (rating < 1 || rating > 5) {
+        alert("❌ Rating must be between 1 and 5!");
+        return false;
+      }
+
+
+      // Feedback length
+      if (feedback.length < 10) {
+        alert("❌ Feedback must be at least 10 characters long!");
+        return false;
+      }
+
+
+      return true;
+    }
+  </script>
+</body>
+</html>
+
+
+
+
+
+
+server.js
+// server.js
+const express = require("express");
+const app = express();
+app.use(express.urlencoded({ extended: true }));
+
+
+app.post("/submit", (req, res) => {
+  const { name, email, rating, feedback } = req.body;
+
+
+  // === Backend validation ===
+  if (!name || !email || !rating || !feedback) {
+    return res.send("❌ Please fill all fields!");
+  }
+
+
+  // Prevent script tags
+  const scriptRegex = /<script.*?>.*?<\/script>/i;
+  if (scriptRegex.test(name) || scriptRegex.test(feedback)) {
+    return res.send("❌ Script tags are not allowed!");
+  }
+
+
+  // Name validation
+  if (!/^[A-Za-z\s]+$/.test(name)) {
+    return res.send("❌ Invalid name (letters only allowed).");
+  }
+
+
+  // Email already exists check (simulated)
+  if (email === "test@gmail.com") {
+    return res.send("❌ Email already exists in database.");
+  }
+
+
+  // Rating validation
+  if (rating < 1 || rating > 5) {
+    return res.send("❌ Rating must be between 1 and 5.");
+  }
+
+
+  // Feedback content validation
+  if (feedback.length < 10) {
+    return res.send("❌ Feedback is too short.");
+  }
+
+
+  if (/select|drop|insert|delete|update/i.test(feedback)) {
+    return res.send("❌ Possible SQL injection detected.");
+  }
+
+
+  // Success response
+  res.send(`
+    ✅ Feedback submitted successfully!<br>
+    <b>Name:</b> ${name}<br>
+    <b>Email:</b> ${email}<br>
+    <b>Rating:</b> ${rating}<br>
+    <b>Feedback:</b> ${feedback}<br>
+  `);
+});
+
+
+app.listen(3000, () => console.log("🚀 Server running at http://localhost:3000"));
+
+
+
+
+Input Field
+	Frontend Validation Example
+	Backend Validation Example
+	Name
+	Must not be empty (use required in HTML or JS check)
+	Check if name only contains letters (no numbers/symbols)
+	Email
+	Must be a valid email format (use type="email")
+	Check if email already exists in database
+	Rating
+	Must be between 1–5 (HTML min, max attributes or JS check)
+	Validate rating range again on server side
+	Feedback Message
+	Must be at least 10 characters (JS check)
+	Check for SQL injection or restricted words before saving
+	Submit Button
+	Disabled if fields are invalid (JS)
+	Reject invalid data on server

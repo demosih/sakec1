@@ -1,0 +1,15 @@
+﻿1. Install Burp Suite from Port Swigger for community
+2. Launch the Burp Suite 
+3. Click on Proxy
+4. Click on Intercept on 
+5. Open Browser
+6. Search for 127.0.0.1:8080
+7. Download CA Certificate 
+8. Minimize the screen
+9. Check the Request column
+10. Go the minimized screen 
+11. Search OWASP Juice Shop
+12. Go to the main screen
+13. Click on the second line
+14. Click on Forward
+15. Click on the second option

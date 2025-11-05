@@ -1,0 +1,19 @@
+﻿* Log in to https://github.com
+* Click your profile picture → Settings
+* On the left sidebar, click Developer settings
+* Then click Personal access tokens → Tokens (classic)
+* Click Generate new token (classic)
+* Note: Git Access Token for Purva
+* Expiration: e.g., 90 days or “No expiration”
+* Select Scopes (Permissions) — tick:
+   * repo → full control of private and public repositories
+   * workflow → if using GitHub Actions
+   * (Optional) user if you want to access profile info
+* Scroll down and click Generate token 
+* Copy the generate PAT
+* mkdir repo
+* cd repo
+* git remote -v
+* git status 
+* git push origin main
+* A github browser will open and paste the PAT

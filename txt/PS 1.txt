@@ -1,0 +1,158 @@
+﻿1. CREATE A FOLDER
+
+
+2. PUT THE FILE IN IT index.html
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Form Validation Example - Purva</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f8e8f9;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    form {
+      background: #ffffff;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      width: 300px;
+    }
+    h2 {
+      text-align: center;
+      color: #b83280;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    input {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button {
+      margin-top: 15px;
+      width: 100%;
+      padding: 10px;
+      background-color: #b83280;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #972f70;
+    }
+    .error {
+      color: red;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+
+
+  <form id="myForm" onsubmit="return validateForm()">
+    <h2>Registration Form</h2>
+
+
+    <label for="email">Email:</label>
+    <input type="text" id="email" name="email">
+    <span id="emailError" class="error"></span>
+
+
+    <label for="phone">Phone Number:</label>
+    <input type="text" id="phone" name="phone">
+    <span id="phoneError" class="error"></span>
+
+
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password">
+    <span id="passwordError" class="error"></span>
+
+
+    <button type="submit">Submit</button>
+  </form>
+
+
+  <script>
+    function validateForm() {
+      let email = document.getElementById("email").value.trim();
+      let phone = document.getElementById("phone").value.trim();
+      let password = document.getElementById("password").value.trim();
+
+
+      let emailError = document.getElementById("emailError");
+      let phoneError = document.getElementById("phoneError");
+      let passwordError = document.getElementById("passwordError");
+
+
+      // Clear previous errors
+      emailError.textContent = "";
+      phoneError.textContent = "";
+      passwordError.textContent = "";
+
+
+      // Regular expressions for validation
+      let emailPattern = /^[^ ]+@[^ ]+\.[a-z]{2,3}$/;
+      let phonePattern = /^[0-9]{10}$/;
+
+
+      let valid = true;
+
+
+      // Email validation
+      if (email === "") {
+        emailError.textContent = "Email is required";
+        valid = false;
+      } else if (!email.match(emailPattern)) {
+        emailError.textContent = "Enter a valid email (e.g. example@gmail.com)";
+        valid = false;
+      }
+
+
+      // Phone number validation
+      if (phone === "") {
+        phoneError.textContent = "Phone number is required";
+        valid = false;
+      } else if (!phone.match(phonePattern)) {
+        phoneError.textContent = "Enter a 10-digit number only";
+        valid = false;
+      }
+
+
+      // Password validation
+      if (password === "") {
+        passwordError.textContent = "Password is required";
+        valid = false;
+      } else if (password.length < 6) {
+        passwordError.textContent = "Password must be at least 6 characters";
+        valid = false;
+      }
+
+
+      // If everything is valid
+      if (valid) {
+        alert("Form submitted successfully!");
+      }
+
+
+      return valid; // Return false prevents form submission if invalid
+    }
+  </script>
+
+
+</body>
+</html>

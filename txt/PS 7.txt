@@ -1,0 +1,187 @@
+﻿Create a folder and put 5 files into it 
+1. user.php
+2. index.php
+3. authenticate.php
+4. dashboard.php
+
+
+Install php and set environment variables is not installed
+
+
+Run the following commands : 
+* php -v
+* cd 
+* php -S localhost:8000
+
+
+http://localhost:8000
+
+
+Username : bob
+Password : secret
+
+
+
+
+user.php
+<?php
+// users.php
+// Demo user store. In real apps use a database.
+return [
+    // username => password_hash('password123', PASSWORD_DEFAULT)
+    'alice' => '$2y$10$9aP5w1y1qXbQZ0s9Gf0vEu5l7wN9UoJvH2zQ0q9Hnqg5KQZ7H3bW6',
+    'bob'   => password_hash('secret', PASSWORD_DEFAULT), // generate at runtime
+];
+
+
+
+
+index.php
+<?php
+// index.php
+session_start();
+
+
+// If already logged in, send to dashboard
+if (!empty($_SESSION['user'])) {
+    header('Location: dashboard.php');
+    exit;
+}
+
+
+// Show any message (e.g. after logout)
+$msg = $_GET['msg'] ?? '';
+?>
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Login</title></head>
+<body>
+  <h2>Login</h2>
+  <?php if ($msg): ?>
+    <p style="color:green;"><?php echo htmlspecialchars($msg); ?></p>
+  <?php endif; ?>
+
+
+  <form method="post" action="authenticate.php">
+    <label>
+      Username:<br>
+      <input name="username" required autofocus>
+    </label><br><br>
+
+
+    <label>
+      Password:<br>
+      <input name="password" type="password" required>
+    </label><br><br>
+
+
+    <button type="submit">Login</button>
+  </form>
+</body>
+</html>
+
+
+
+
+authenticate.php
+<?php
+// authenticate.php
+// Demonstrates secure-ish session creation and cookie handling.
+
+
+declare(strict_types=1);
+
+
+// Configure session cookie params before session_start
+$cookieParams = session_get_cookie_params();
+$cookieLifetime = 0; // session cookie (expires when browser closes)
+session_set_cookie_params([
+    'lifetime' => $cookieLifetime,
+    'path'     => $cookieParams['path'],
+    'domain'   => $cookieParams['domain'],
+    // 'secure' => true, // enable when using HTTPS
+    'httponly' => true,
+    'samesite' => 'Lax' // adjust as needed: 'Strict'|'Lax'|'None'
+]);
+
+
+session_start();
+
+
+// simple user store
+$users = require __DIR__ . '/users.php';
+
+
+// For demo: if a user password is a plain string (like bob above), ensure it is hashed.
+// (This block is just to ensure demo works if someone left a plain password)
+foreach ($users as $u => $h) {
+    if (strpos($h, '$2y$') !== 0) {
+        $users[$u] = password_hash($h, PASSWORD_DEFAULT);
+    }
+}
+
+
+// Get input (trimmed)
+$username = trim($_POST['username'] ?? '');
+$password = $_POST['password'] ?? '';
+
+
+if (!$username || !$password) {
+    header('Location: index.php?msg=' . urlencode('Missing username or password'));
+    exit;
+}
+
+
+// Verify user
+if (isset($users[$username]) && password_verify($password, $users[$username])) {
+    // Successful login: regenerate session id to avoid fixation
+    session_regenerate_id(true);
+
+
+    // Store minimal user info in session
+    $_SESSION['user'] = [
+        'username' => $username,
+        'login_time' => time()
+    ];
+
+
+    // Optional: you can set any additional session flags here
+    header('Location: dashboard.php');
+    exit;
+} else {
+    header('Location: index.php?msg=' . urlencode('Invalid credentials'));
+    exit;
+}
+
+
+
+
+
+
+dashboard.php
+<?php
+// dashboard.php
+session_start();
+
+
+if (empty($_SESSION['user'])) {
+    header('Location: index.php?msg=' . urlencode('Please login first'));
+    exit;
+}
+
+
+$user = $_SESSION['user'];
+?>
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Dashboard</title></head>
+<body>
+  <h2>Welcome, <?php echo htmlspecialchars($user['username']); ?></h2>
+  <p>Logged in at: <?php echo date('Y-m-d H:i:s', $user['login_time']); ?></p>
+
+
+  <form method="post" action="logout.php">
+    <button type="submit">Logout</button>
+  </form>
+</body>
+</html>

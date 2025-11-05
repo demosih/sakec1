@@ -1,0 +1,28 @@
+﻿CMD
+* git --version
+* git config --global user.name "Purva"
+* git config --global user.email "purva.mahamunkar17661@sakec.ac.in"
+* mkdir repo
+* cd repo
+* git init
+* echo "print('Hello, Purva!')" > hello.py
+* git status
+* git add hello.py
+* git commit -m "Added hello.py with print statement"
+
+
+GITHUB
+* Create and Add a new repository 
+* Copy https://github.com/purva-mahamunkar/first-repo.git
+
+
+CMD
+* git remote add origin https://github.com/purva-mahamunkar/repo.git
+* git branch -M main
+* git push -u origin main
+* echo print("Hello, Purva! How are you?") > hello.py
+* git add hello.py
+* git commit -m "Updated greeting message"
+* git push
+* git log --oneline
+* git cat-file -p HEAD

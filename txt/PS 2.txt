@@ -1,0 +1,192 @@
+﻿CREATE A MAIN FOLDER THAT WILL INCLUDE : 
+* Subfolder - templates - login.html
+* File - init_db , vulnerable_app, fixed_app
+
+
+Commands  - 
+* cd
+* python --version
+* python -m pip install --upgrade pip
+* python -m pip install flask
+* python init_db.py
+* python vulnerable_app.py
+
+
+Open your browser: http://127.0.0.1:5000
+Normal credentials:
+   * username: alice
+   * password: wonderland
+   * username: ' OR '1'='1' --
+   * password: x
+* python fixed_app.py
+
+
+
+
+login.html : 
+<!-- templates/login.html -->
+<!doctype html>
+<html>
+  <head><meta charset="utf-8"><title>Login</title></head>
+  <body>
+    <h2>Login</h2>
+    <form method="post" action="/login">
+      <label>Username: <input name="username"></label><br>
+      <label>Password: <input name="password" type="password"></label><br>
+      <button type="submit">Login</button>
+    </form>
+    {% if message %}
+      <p><strong>{{ message }}</strong></p>
+    {% endif %}
+  </body>
+</html>
+
+
+
+
+
+
+vulnerable_app : 
+
+
+# vulnerable_app.py
+from flask import Flask, request, render_template, redirect, url_for
+import sqlite3
+
+
+app = Flask(__name__)
+
+
+def query_db_raw(username, password):
+    conn = sqlite3.connect('users.db')
+    c = conn.cursor()
+    # Unsafely build SQL using string formatting (vulnerable!)
+    sql = f"SELECT id, username FROM users WHERE username = '{username}' AND password = '{password}'"
+    print("DEBUG SQL:", sql)  # shows what SQL is being run (for learning)
+    try:
+        c.execute(sql)
+        row = c.fetchone()
+    finally:
+        conn.close()
+    return row
+
+
+@app.route('/', methods=['GET'])
+def index():
+    return render_template('login.html')
+
+
+@app.route('/login', methods=['POST'])
+def login():
+    username = request.form.get('username', '')
+    password = request.form.get('password', '')
+    user = query_db_raw(username, password)
+    if user:
+        return render_template('login.html', message=f"Logged in as {user[1]}")
+    else:
+        return render_template('login.html', message="Login failed")
+
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
+
+
+
+
+
+
+
+
+
+
+
+fixed_app.py
+# fixed_app.py
+from flask import Flask, request, render_template
+import sqlite3
+
+
+app = Flask(__name__)
+
+
+def query_db_prepared(username, password):
+    conn = sqlite3.connect('users.db')
+    c = conn.cursor()
+    # Parameterized/prepared statement: user input is passed separately
+    sql = "SELECT id, username FROM users WHERE username = ? AND password = ?"
+    print("DEBUG (prepared):", sql, "params:", (username, password))
+    try:
+        c.execute(sql, (username, password))
+        row = c.fetchone()
+    finally:
+        conn.close()
+    return row
+
+
+@app.route('/', methods=['GET'])
+def index():
+    return render_template('login.html')
+
+
+@app.route('/login', methods=['POST'])
+def login():
+    username = request.form.get('username', '')
+    password = request.form.get('password', '')
+    user = query_db_prepared(username, password)
+    if user:
+        return render_template('login.html', message=f"Logged in as {user[1]}")
+    else:
+        return render_template('login.html', message="Login failed")
+
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ Init_db.py
+
+
+# init_db.py
+import sqlite3
+
+
+conn = sqlite3.connect('users.db')
+c = conn.cursor()
+
+
+# create table
+c.execute('''
+CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT UNIQUE,
+    password TEXT
+)
+''')
+
+
+# insert a test user (username: alice, password: wonderland)
+try:
+    c.execute("INSERT INTO users (username, password) VALUES (?, ?)",
+              ("alice", "wonderland"))
+    conn.commit()
+    print("Inserted user alice / wonderland")
+except Exception as e:
+    print("User may already exist:", e)
+
+
+conn.close()
