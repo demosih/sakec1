@@ -1,0 +1,22 @@
+<!-- feedback.html -->
+<form id="fb" onsubmit="return send();">
+  <input id="name" placeholder="name" required><br>
+  <input id="email" type="email" placeholder="email" required><br>
+  <textarea id="msg" required></textarea><br>
+  <button>Send</button>
+  <div id="r"></div>
+</form>
+<script>
+  function hasScript(s){ return /<\s*script/i.test(s); }
+  function send(){
+    const n=document.getElementById('name').value.trim();
+    const e=document.getElementById('email').value.trim();
+    const m=document.getElementById('msg').value;
+    const r=document.getElementById('r'); r.textContent='';
+    if(!n||!e||!m){ r.textContent='All fields required'; return false; }
+    if(hasScript(n)||hasScript(m)){ r.textContent='Script tags not allowed'; return false; }
+    fetch('/feedback',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:n,email:e,message:m})})
+      .then(res=>res.json()).then(j=> r.textContent=j.ok? 'Thanks':'Server: '+j.msg);
+    return false;
+  }
+</script>

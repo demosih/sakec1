@@ -1,0 +1,18 @@
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Password Strength</title></head>
+<body>
+  <input id="p" placeholder="Enter password">
+  <div id="r"></div>
+
+  <script>
+    p.oninput = () => {
+      let v = p.value, s = 0;
+      if (v.length >= 8) s++;
+      if (/\d/.test(v)) s++;
+      
+      r.textContent = ["Weak", "Okay", "Strong", ][s];
+    };
+  </script>
+</body>
+</html>

@@ -1,0 +1,30 @@
+<!-- form_validation.html -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Simple Validation</title></head>
+<body>
+  <form id="f" onsubmit="return validate()">
+    <input id="email" placeholder="email" required><br>
+    <input id="phone" placeholder="10-digit phone" required><br>
+    <input id="pwd" type="password" placeholder="min 8 chars" required><br>
+    <button>Submit</button>
+    <div id="msg"></div>
+  </form>
+
+  <script>
+    function validate(){
+      let e=document.getElementById('email').value.trim();
+      let p=document.getElementById('phone').value.trim();
+      let pw=document.getElementById('pwd').value;
+      let msg=document.getElementById('msg');
+
+      if(!(e.includes('@') && e.includes('.'))){ msg.textContent='Invalid email'; return false; }
+      if(p.length!=10 ){ msg.textContent='Phone must be 10 digits'; return false; }
+      if(pw.length<8){ msg.textContent='Password too short'; return false; }
+
+      msg.textContent='All good!'; 
+      return false; // stop actual submission (demo)
+    }
+  </script>
+</body>
+</html>

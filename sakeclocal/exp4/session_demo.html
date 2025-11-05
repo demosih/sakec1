@@ -1,0 +1,24 @@
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Cookie Demo</title></head>
+<body>
+<button onclick="setCookie()">Set</button>
+<button onclick="getCookie()">Get</button>
+<button onclick="delCookie()">Delete</button>
+<div id="msg"></div>
+
+<script>
+function setCookie(){
+  document.cookie = "user=soham; path=/"; // session cookie (no expiry)
+  msg.textContent = "Cookie set";
+}
+function getCookie(){
+  msg.textContent = document.cookie || "No cookie";
+}
+function delCookie(){
+  document.cookie = "user=; path=/; max-age=0";
+  msg.textContent = "Cookie deleted";
+}
+</script>
+</body>
+</html>
