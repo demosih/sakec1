@@ -1,0 +1,29 @@
+Problem Statement 4: Intercept Request using Burp Suite
+
+Objective:
+
+To capture and analyze HTTP requests between browser and web server, and identify insecure parameters.
+
+Steps to Perform
+	1.	Install Burp Suite Community Edition from https://portswigger.net/burp￼.
+	2.	Launch Burp Suite
+  	•	Click Proxy → Intercept → Turn Intercept ON.
+	3.	Open Burp’s Embedded Browser
+  	•	Click Open Browser.
+  	•	Visit: 127.0.0.1:8080
+  	•	Download and install CA Certificate (to trust Burp as proxy).
+	4.	Capture a Request
+  	•	In the browser, visit OWASP Juice Shop or any demo website.
+  	•	The request will appear in Burp under Proxy → HTTP history.
+	5.	Inspect HTTP Headers
+  	•	Look for details like:
+        GET /login HTTP/1.1
+        Host: demo.site.com
+        User-Agent: Mozilla/5.0
+        Cookie: sessionid=12345
+	6.	Identify Insecure Parameters
+  	•	Example: Passwords sent in plain text (no HTTPS)
+  	•	Session IDs visible in URL
+  	•	No CSRF token in requests
+
+✅ You have now demonstrated request interception and security analysis.

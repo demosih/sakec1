@@ -1,0 +1,87 @@
+Problem Statement 5: In DVWA, demonstrate an OS Command Injection vulnerability and mitigate it by using input sanitization(e.g. gilter_input() or regex).
+
+Goal
+	1.	Show a command-injection vulnerability in DVWA (local lab).
+	2.	Fix it by validating/whitelisting input and using escapeshellarg() (or avoid shell calls).
+
+1) Vulnerable pattern (what to look for)
+
+This is the unsafe code you will find in DVWA’s command-injection page:
+// vulnerable.php (example)
+$host = $_GET['host'];
+$output = shell_exec('ping -c 1 ' . $host);
+echo "<pre>" . $output . "</pre>";
+Why unsafe: user input is concatenated into a shell command → attacker could inject shell metacharacters.
+
+⸻
+
+2) Secure replacement (copy this into the DVWA file after you practice)
+
+This validates the input (IP or safe hostname) and then escapes it:
+<?php
+$host_input = filter_input(INPUT_GET, 'host', FILTER_SANITIZE_STRING);
+if ($host_input === null || trim($host_input) === '') {
+    echo "Please provide a host.";
+    exit;
+}
+$host_input = trim($host_input);
+
+if (filter_var($host_input, FILTER_VALIDATE_IP)) {
+    $safe_arg = escapeshellarg($host_input);
+} else {
+    $hostname_regex = '/^(?=.{1,253}$)([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?)(\.[a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?)*$/';
+    if (preg_match($hostname_regex, $host_input)) {
+        $safe_arg = escapeshellarg($host_input);
+    } else {
+        http_response_code(400);
+        echo "Invalid host format.";
+        error_log("DVWA command-injection: rejected host input: " . $host_input);
+        exit;
+    }
+}
+
+$cmd = 'ping -c 1 ' . $safe_arg;
+$output = shell_exec($cmd);
+echo "<pre>" . htmlspecialchars($output) . "</pre>";
+?>
+
+Key points: whitelist validation first, then escapeshellarg(); reject bad input.
+
+⸻
+
+3) Safe test inputs (practice these)
+	•	Valid hostname: example.com
+	•	Valid IPv4: 127.0.0.1
+	•	Invalid / should be rejected: bad_host!!, 127.0.0.256, example.com; ls
+	•	Expected: valid inputs produce ping output; invalid inputs return “Invalid host format.” and do not run shell commands.
+
+⸻
+
+4) Quick file-finding commands
+
+Use these to find the vulnerable file in your DVWA directory (run from DVWA root).
+Windows (PowerShell, from dvwa folder):
+Select-String -Path * -Pattern "shell_exec","system","exec","passthru","ping -c" -List
+
+5) How to run DVWA if XAMPP won’t install
+
+(Use these to practice on a clean machine without installing XAMPP.)
+
+Option A — Docker (recommended for practice)
+	•	Install Docker Desktop (if allowed on your machine).
+	•	Run DVWA with a ready image:
+    docker run --rm -it -p 80:80 vulnerables/web-dvwa
+    # then open http://localhost/ in your browser
+
+Option B — Portable VM (use a prebuilt Kali/Metasploitable VM) — practice in a VM you control.
+
+⸻
+
+6) Exam/demo checklist (practice this — show it honestly)
+	1.	Start DVWA; set Security to Low.
+	2.	Show the Command Injection page: run example.com → show ping output (prove app runs shell).
+	3.	Open the PHP file (show original vulnerable line shell_exec(...)). Mention you backed it up.
+	4.	Paste the secure code (the replacement above) and save. Restart Apache if needed.
+	5.	Set Security to High (optional). Run example.com → shows output.
+	6.	Run bad_host!! → shows “Invalid host format.” (prove fix).
+	7.	Explain the mitigation: whitelist validation + escapeshellarg(); better: avoid shell calls entirely.

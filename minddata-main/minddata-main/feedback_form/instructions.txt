@@ -1,0 +1,29 @@
+Feedback Form (Frontend + Backend Validation)
+1.	Create project folder:
+        mkdir feedback_form
+        cd feedback_form
+
+2.	Create files:
+	•	index.html (frontend form + JS validation)
+	•	server.js (Express backend validation)
+
+3.	Initialize & install:
+        npm init -y
+        npm install express
+
+4.	Start server:
+        node server.js
+        Open: http://localhost:3000
+
+5.	Quick tests:
+	•	Valid input: John Doe, john@example.com, rating 1–5, feedback ≥10 chars → success.
+	•	Invalid inputs to check:
+	•	Blank fields → rejected
+	•	Name with numbers/symbols → rejected
+	•	Feedback with <script> → rejected
+	•	Feedback containing select|drop|--|; → rejected
+
+6.	Notes:
+	•	Frontend uses HTML required, type="email", min/max and JS checks.
+	•	Backend re-validates, strips/blocks <script>, escapes output before echoing.
+	•	This is a demo — for production use robust sanitizers, HTTPS, and parameterized DB queries.

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Password Strength Checker</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to right, #89f7fe, #66a6ff);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      color: #333;
+    }
+
+    .password-box{
+      align-items: center;
+      display: flex;
+      flex-direction: column;
+      margin-top: 10px;
+    }
+
+    .show-password input[type="checkbox"] {
+        cursor: pointer;
+        accent-color: #004aad;
+    }
+
+    #togglePassword {
+        cursor: pointer;
+        accent-color: #004aad;
+    }
+
+    h2 {
+      color: #004aad;
+      margin-bottom: 20px;
+    }
+
+    input {
+      padding: 10px;
+      width: 260px;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+
+    #strengthBar {
+      width: 260px;
+      height: 10px;
+      margin-top: 10px;
+      border-radius: 5px;
+      background-color: #ddd;
+      overflow: hidden;
+    }
+
+    #strengthFill {
+      height: 100%;
+      width: 0%;
+      background-color: red;
+      transition: width 0.4s, background-color 0.4s;
+    }
+
+    #strengthMessage {
+      margin-top: 12px;
+      font-weight: bold;
+    }
+
+    ul {
+      text-align: left;
+      list-style-type: none;
+      margin-top: 15px;
+      padding: 0;
+    }
+
+    li {
+      font-size: 14px;
+      margin: 3px 0;
+    }
+
+    .valid {
+      color: green;
+    }
+
+    .invalid {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <h2>Password Strength Checker</h2>
+  <div class="password-box">
+    <input type="password" id="password" placeholder="Enter your password">
+
+    <div class="show-password">
+        <input type="checkbox" id="togglePassword">
+    </div>
+  </div>
+  
+  <div id="strengthBar"><div id="strengthFill"></div></div>
+  <div id="strengthMessage"></div>
+
+  <ul>
+    <li id="length" class="invalid">Minimum 8 characters</li>
+    <li id="number" class="invalid">Must contain at least one number</li>
+    <li id="special" class="invalid">Must contain at least one special character</li>
+  </ul>
+
+  <script>
+    const password = document.getElementById('password');
+    const fill = document.getElementById('strengthFill');
+    const message = document.getElementById('strengthMessage');
+
+    const lengthReq = document.getElementById('length');
+    const numberReq = document.getElementById('number');
+    const specialReq = document.getElementById('special');
+
+    const togglePassword = document.getElementById('togglePassword');
+
+    togglePassword.addEventListener('change', () => {
+        password.type = togglePassword.checked ? 'text' : 'password';
+    });
+
+    password.addEventListener('input', () => {
+      const value = password.value;
+      const hasNumber = /\d/.test(value);
+      const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(value);
+      const minLength = value.length >= 8;
+
+      // Update checklist
+      lengthReq.className = minLength ? 'valid' : 'invalid';
+      lengthReq.textContent = minLength ? 'Minimum 8 characters (OK)' : 'Minimum 8 characters';
+
+      numberReq.className = hasNumber ? 'valid' : 'invalid';
+      numberReq.textContent = hasNumber ? 'Contains at least one number (OK)' : 'Must contain at least one number';
+
+      specialReq.className = hasSpecial ? 'valid' : 'invalid';
+      specialReq.textContent = hasSpecial ? 'Contains at least one special character (OK)' : 'Must contain at least one special character';
+
+      // Determine strength
+      let strength = 0;
+      if (minLength) strength++;
+      if (hasNumber) strength++;
+      if (hasSpecial) strength++;
+
+      // Update progress bar and text
+      if (strength === 0) {
+        fill.style.width = '0%';
+        fill.style.backgroundColor = 'red';
+        message.textContent = '';
+      } else if (strength === 1) {
+        fill.style.width = '33%';
+        fill.style.backgroundColor = 'red';
+        message.textContent = 'Weak password';
+      } else if (strength === 2) {
+        fill.style.width = '66%';
+        fill.style.backgroundColor = 'orange';
+        message.textContent = 'Medium strength password';
+      } else if (strength === 3) {
+        fill.style.width = '100%';
+        fill.style.backgroundColor = 'green';
+        message.textContent = 'Strong password';
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,49 @@
+Problem Statement 3: Use Git to create a repository, make commits, and push code to GitHub
+
+Objective:
+
+To demonstrate version control using Git — how it helps track code changes and maintain integrity by committing and pushing code to GitHub.
+
+⸻
+
+Steps to Perform
+
+On Your System (CMD or Terminal):
+
+git --version                         # check Git installation
+git config --global user.name "Vanshita"
+git config --global user.email "vanshita.parab17627@sakec.ac.in"
+
+mkdir repo                            # create folder
+cd repo                               # move into folder
+git init                              # initialize git repository
+
+echo "print('Hello')" > hello.py      # create a sample file
+git status                            # check file status
+git add hello.py                      # stage file
+git commit -m "Added hello.py with print statement"   # commit file
+
+On GitHub:
+	1.	Go to https://github.com￼
+	2.	Create a new repository (e.g., name it repo)
+	3.	Copy the repository link (example):
+      https://github.com/Vanshita-Parab/repo.git
+
+Back in CMD:
+git remote add origin https://github.com/Vanshita-Parab/repo.git
+git branch -M main
+git push -u origin main
+✅ Your code is now pushed to GitHub.
+
+Update and Push Again:
+echo "print('Hello, How are you?')" > hello.py
+git add hello.py
+git commit -m "Updated greeting message"
+git push
+
+Check History
+git log --oneline
+git cat-file -p HEAD
+
+Output: You’ll see commit logs showing code versions — proving version control.
+

@@ -1,0 +1,21 @@
+<!doctype html>
+<html>
+  <head><meta charset="utf-8"><title>Login</title></head>
+  <body>
+    <br><br>
+    <center>
+      <h2>Login</h2>
+
+      <form method="post" action="/login">
+        <label>&emsp;Username: <input name="username"></label><br><br>
+        <label>&emsp;Password: <input name="password" type="password"></label><br><br>
+        <button type="submit">Login</button>
+      </form>
+
+      <br>
+      {% if message %}
+        <p><strong>{{ message }}</strong></p>
+      {% endif %}
+    </center>
+  </body>
+</html>

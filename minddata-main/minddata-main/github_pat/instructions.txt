@@ -1,0 +1,48 @@
+ Problem Statement 10: Generate and Use Personal Access Token (PAT) in GitHub
+
+🎯 Objective:
+
+To show secure authentication with GitHub using a Personal Access Token (PAT) instead of a password.
+
+⸻
+
+🧠 Steps to Perform
+
+🧩 Part 1: Generate Token
+	1.	Log in to https://github.com￼.
+	2.	Go to:
+       Profile → Settings → Developer settings → Personal access tokens → Tokens (classic)
+
+Click “Generate new token (classic)”.
+	4.	Fill details:
+  	•	Note: Git Access Token for Vanshita
+  	•	Expiration: e.g., 90 days or “No expiration”
+	5.	Under Scopes, tick:
+  	•	repo → Full control of private/public repos
+  	•	workflow → (optional, for CI/CD)
+	6.	Click Generate Token.
+	7.	Copy the Token (it appears once).
+
+⸻
+
+🧩 Part 2: Use Token in Git
+	1.	Open CMD or Terminal:
+      mkdir repo
+      cd repo
+      git init
+	2.	Link your remote repo:
+      git remote add origin https://github.com/Vanshita-Parab/repo.git
+      git status
+      git push origin main
+When prompted for credentials:
+	•	Username: your GitHub username
+	•	Password: paste the token (instead of password)
+
+✅ Your push will succeed securely using PAT authentication.
+
+⸻
+
+🧠 Concept Recap
+	•	PAT (Personal Access Token) = secure alternative to password.
+	•	Avoids storing plain passwords in your system.
+	•	Scoped permissions provide better security control.
